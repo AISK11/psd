@@ -26,9 +26,9 @@ help() {
 
 argparse() {
     INFILE=''
+    LEGACY='0'
     OUTFILE=''
     VERBOSE='1'
-    LEGACY='0'
 
     if [ "${#}" -lt 1 ]
     then
@@ -107,7 +107,7 @@ deobfuscation() {
         printf '[+] Removed empty lines.\n'
     fi
 
-    CONTENT="$(echo "${CONTENT}" | sed "s/['\"]\ *+\ *['\"]//g")"
+    CONTENT="$(echo "${CONTENT}" | sed "s/['\"] *+ *['\"]//g")"
     if [ "${VERBOSE}" -ne 0 ]
     then
         printf '[+] Removed string concatenation.\n'
@@ -115,12 +115,34 @@ deobfuscation() {
 
 
 
-    ## Replace ';' to '\n'.
-    #CONTENT="$(echo "${CONTENT}" | tr ';' '\n')"
+    ## Reordering
+    REORDERS="$(echo "${CONTENT}" | grep -Po "\(.*?\".*?{[0-9]+}.*?\".*?-f.*?['\"].*?['\"].*?\)")"
+
+    echo "${REORDERS}"
 
 
 
-    echo "${CONTENT}"
+#    REORDERS_COUNT="$(echo "${CONTENT}" | grep -Eo '"(\{[0-9]+\})+" *-f' | sed 's/[^{]//g' | while read -r CHAR_COUNT ; do printf '%s' "${CHAR_COUNT}" | wc -m ; done)"
+#    REORDERS_LIST="$(echo "${CONTENT}" | grep -Po )"
+#    REORDERS=''
+#    while IFS='' read -r REORDER
+#        do
+#            echo "${REORDER}"
+#            #REORDER="$(echo "${CONTENT}" | grep -Po "(\{[0-9]+\})+\" *-f(?:[^\"']*[\"']){"${REORDERS_COUNT}"}")"
+#            #echo "${REORDER}"
+#            #REORDER_LIST="${REORDER_LIST}"
+#    done << EOF
+#    ${REORDERS_COUNT}
+#EOF
+ # REGEX 101
+ # grep -Po "(\{[0-9]+\})+\" *-f(?:[^\"']*[\"']){4}"
+ # .("{4}{1}{0}{2}{3}" -f   'O','-WMI',"b",'ject','Get') -ComputerName ('.') -Namespace ((("{3}{5}{1}{2}{4}{0}" -f 'ion','ts','j1sub','r','script','oo'))
+#    CONTENT="$(echo "${CONTENT}" | )"
+#   "{[0-9]*}*\ *-f\ *"
+# \(?"(\{[0-9]+\})+\"\ *-f\ *.*?\)
+# '\(?"(\{[0-9]+\})+"\ *-f.*\)'
+#    echo "${REORDERS_COUNT_LIST}"
+#    echo "${CONTENT}"
 }
 
 
